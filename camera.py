@@ -16,9 +16,9 @@ class VideoCamera(object):
         self.mp_drawing = mp.solutions.drawing_utils
         
         # 状态变量
-        self.status = "Normal" # 状态：Normal, Bad Posture, Too Close
+        self.status = "Normal" 
+        self.neck_inclination = 0 # [新增] 初始化角度变量
         self.start_time = time.time()
-        self.bad_posture_time = 0
 
     def __del__(self):
         self.video.release()
@@ -26,11 +26,10 @@ class VideoCamera(object):
     def calculate_angle(self, a, b, c):
         """
         计算三个点之间的角度 (用于判断驼背)
-        a, b, c 分别是 [x, y] 坐标
         """
-        a = np.array(a) # 第一个点 (如：耳朵)
-        b = np.array(b) # 中间点 (如：肩膀)
-        c = np.array(c) # 第三个点 (如：髋部或垂直参考点)
+        a = np.array(a) 
+        b = np.array(b) 
+        c = np.array(c) 
         
         radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
         angle = np.abs(radians*180.0/np.pi)
@@ -63,21 +62,18 @@ class VideoCamera(object):
             
             # --- 核心算法逻辑区域 ---
             
-            # 1. 获取关键点坐标 (MediaPipe 返回的是 0-1 的比例，需乘以宽高)
-            # 左耳 (7), 左肩 (11)
-            nose = [landmarks[self.mp_pose.PoseLandmark.NOSE.value].x, landmarks[self.mp_pose.PoseLandmark.NOSE.value].y]
+            # 1. 获取关键点坐标
             l_ear = [landmarks[self.mp_pose.PoseLandmark.LEFT_EAR.value].x * w, landmarks[self.mp_pose.PoseLandmark.LEFT_EAR.value].y * h]
             l_shldr = [landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].x * w, landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER.value].y * h]
             
-            # 2. 简单的驼背判定：计算“耳朵-肩膀”向量与Y轴的夹角
-            # 这里我们制造一个虚拟点，位于肩膀的正下方，用于构建垂直线
+            # 2. 简单的驼背判定
             vertical_point = [l_shldr[0], l_shldr[1] + 100] 
             
-            # 计算颈部倾斜角
-            neck_inclination = self.calculate_angle(l_ear, l_shldr, vertical_point)
+            # [修改] 使用 self.neck_inclination 存储，以便 get_data 调用
+            self.neck_inclination = self.calculate_angle(l_ear, l_shldr, vertical_point)
 
             # 3. 判定逻辑 (阈值可调整)
-            if neck_inclination < 150: # 正常坐姿通常接近 180度或更大(取决于坐标系)，这里假设前倾会变小，具体需调试
+            if self.neck_inclination < 150: 
                 self.status = "Warning: Slouching!"
                 color = (0, 0, 255) # 红色
             else:
@@ -87,7 +83,7 @@ class VideoCamera(object):
             # 4. 在画面上绘制信息
             cv2.putText(image, self.status, (10, 30), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-            cv2.putText(image, f"Neck Angle: {int(neck_inclination)}", (10, 60), 
+            cv2.putText(image, f"Neck Angle: {int(self.neck_inclination)}", (10, 60), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
 
             # 绘制骨骼连线
@@ -97,3 +93,11 @@ class VideoCamera(object):
         # 编码为 JPEG 格式传输给前端
         ret, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
+
+    def get_data(self):
+        """[新增] 返回给前端的数据接口"""
+        return {
+            "status": self.status,
+            "angle": int(self.neck_inclination),
+            "timestamp": time.strftime("%H:%M:%S")
+        }
