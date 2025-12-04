@@ -59,8 +59,18 @@ main {
 }
 
 /* 视频框设计 */
+/* === 修改 start: static/css/style.css === */
+
+/* 找到这一段并修改 */
 .video-frame {
-    flex: 2;
+    flex: 0 1 auto;
+    width: 100%;
+    max-width: 640px;
+    
+    /* 新增这一行：限制最大高度为屏幕高度的 60%，防止在小屏幕上撑破 */
+    max-height: 60vh; 
+    
+    aspect-ratio: 4 / 3;
     border: 1px solid #333;
     position: relative;
     background: #000;
@@ -68,13 +78,20 @@ main {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    margin: auto; 
+    align-self: center;
 }
 
+/* === 修改 end === */
+
+/* 找到这一段并修改 */
 .video-frame img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 保持比例填满 */
-    filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(1.2); /* 绿屏滤镜效果 */
+    /* object-fit: cover;  <-- 删掉这一行，或者注释掉 */
+    object-fit: contain;  /* <-- 改成这一行：保证显示全貌，不裁切 */
+    
+    filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(1.2); 
 }
 
 /* 视频四角装饰 */
