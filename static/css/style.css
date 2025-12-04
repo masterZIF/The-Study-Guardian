@@ -1,9 +1,9 @@
 :root {
-    --primary-color: #00ff41; /* 经典黑客绿 */
-    --alert-color: #ff3333;   /* 警报红 */
-    --bg-color: #0a0a0a;      /* 深黑背景 */
-    --panel-bg: rgba(0, 20, 0, 0.3); /* 半透明面板 */
-    --border-color: #1a3320;
+    --primary-color: #00ff41;
+    --alert-color: #ff3333;
+    --bg-color: #111;
+    --panel-bg: rgba(20, 20, 20, 0.8);
+    --border-color: #333;
 }
 
 body {
@@ -12,159 +12,91 @@ body {
     font-family: 'Consolas', 'Monaco', monospace;
     margin: 0;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* 防止出现滚动条 */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* 扫描线背景 */
-.scanline {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.03) 3px);
-    pointer-events: none;
-    z-index: 0;
-}
-
 .main-interface {
-    width: 90%;
-    max-width: 1000px;
-    background: rgba(0,0,0,0.8);
+    width: 95%; /* 几乎占满全屏宽度 */
+    height: 90vh; /* 占满高度 */
+    max-width: 1400px; /* 大屏幕上不过于宽 */
+    background: #000;
     border: 1px solid var(--border-color);
     padding: 20px;
-    z-index: 1;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
 }
 
-/* 顶部栏 */
 .sys-header {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    flex-shrink: 0; /* 防止头部被压缩 */
 }
-.brand { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; }
-.version { font-size: 0.8rem; opacity: 0.7; }
-.sys-info { font-size: 0.8rem; color: #666; }
-.status-dot { display: inline-block; width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; margin-right: 5px; box-shadow: 0 0 5px var(--primary-color); }
 
-/* 左右布局核心 */
+/* --- 核心布局修改 --- */
 .dashboard-grid {
     display: flex;
-    gap: 30px;
-    align-items: flex-start; /* 顶部对齐 */
+    gap: 20px;
+    flex: 1; /* 填满剩余高度 */
+    overflow: hidden;
 }
 
-/* 左侧：视频区 */
+/* 左侧视频区：占 70% */
 .monitor-panel {
-    flex: 0 0 45%; /* 占用 45% 宽度 */
+    flex: 3; /* 权重改为 3 */
+    display: flex;
+    flex-direction: column;
 }
 
 .video-wrapper {
     position: relative;
     border: 1px solid #333;
     background: #000;
-    padding: 2px;
+    flex: 1; /* 让视频容器填满左侧区域 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .video-wrapper img {
+    /* 关键修改：恢复全彩，自适应大小 */
     width: 100%;
-    display: block;
-    filter: sepia(80%) hue-rotate(50deg) contrast(1.1); /* 稍微降低一点滤镜强度，看起来清晰点 */
+    height: 100%;
+    object-fit: contain; /* 保持比例，完整显示 */
+    filter: none; /* <--- 删除了滤镜，恢复彩色 */
 }
 
-.rec-tag {
-    position: absolute;
-    top: 10px; right: 10px;
-    color: var(--alert-color);
-    font-size: 0.8rem;
-    animation: blink 2s infinite;
-}
-
-.camera-info {
-    margin-top: 10px;
-    font-size: 0.7rem;
-    color: #444;
-}
-
-/* 装饰角标 */
-.reticle-corner {
-    position: absolute;
-    width: 10px; height: 10px;
-    border: 2px solid var(--primary-color);
-}
-.top-left { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
-.top-right { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
-.bottom-left { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
-.bottom-right { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
-
-/* 右侧：数据区 */
+/* 右侧数据区：占 30% */
 .data-panel {
-    flex: 1;
+    flex: 1; /* 权重改为 1 */
     display: flex;
     flex-direction: column;
     gap: 15px;
+    min-width: 250px; /* 防止太窄 */
 }
 
+/* 其他样式保持微调 */
 .data-card {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
     padding: 15px;
 }
+.card-label { font-size: 0.8rem; color: #888; margin-bottom: 8px; border-bottom: 1px solid #333; }
+.status-display { font-size: 1.5rem; font-weight: bold; text-align: center; color: #fff; }
+.metric-row { display: flex; align-items: center; gap: 10px; }
+.metric-value { font-size: 1.2rem; min-width: 50px; }
+.progress-bar-bg { flex: 1; height: 8px; background: #333; }
+.progress-bar-fill { height: 100%; background: var(--primary-color); transition: width 0.3s; }
+.log-list { list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #aaa; overflow-y: auto; max-height: 200px; }
+.log-list li { padding: 4px 0; border-bottom: 1px solid #222; }
 
-.card-label {
-    font-size: 0.7rem;
-    color: #555;
-    margin-bottom: 10px;
-    border-bottom: 1px dashed #222;
-    padding-bottom: 5px;
-}
-
-/* 状态显示 */
-.status-display {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
-}
-
-/* 进度条样式 */
-.metric-row {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.metric-value { font-size: 1.5rem; width: 60px; }
-.progress-bar-bg {
-    flex: 1;
-    height: 10px;
-    background: #111;
-    border: 1px solid #333;
-}
-.progress-bar-fill {
-    height: 100%;
-    background: var(--primary-color);
-    width: 50%;
-    transition: width 0.3s, background-color 0.3s;
-}
-
-.helper-text { font-size: 0.7rem; color: #444; margin-top: 5px; }
-
-/* 日志 */
-.log-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.8rem;
-    height: 100px;
-    overflow-y: hidden; /* 隐藏滚动条 */
-    color: #888;
-}
-.log-list li { border-bottom: 1px solid #111; padding: 3px 0; }
-
-/* 动画 */
+/* 装饰元素 */
+.rec-tag { position: absolute; top: 15px; right: 15px; color: red; font-weight: bold; animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0; } }
