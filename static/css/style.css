@@ -1,102 +1,114 @@
 :root {
-    --primary-color: #00ff41;
-    --alert-color: #ff3333;
-    --bg-color: #111;
-    --panel-bg: rgba(20, 20, 20, 0.8);
-    --border-color: #333;
+    --bg-color: #fdfbf7;
+    --card-white: #ffffff;
+    --state-good-bg: #d1fae5;
+    --state-good-text: #065f46;
+    --state-bad-bg: #ffe4e6;
+    --state-bad-text: #9f1239;
+    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
 }
 
 body {
     background-color: var(--bg-color);
-    color: var(--primary-color);
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Varela Round', 'Microsoft YaHei', sans-serif;
     margin: 0;
     height: 100vh;
-    overflow: hidden; /* 防止出现滚动条 */
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #333;
 }
 
-.main-interface {
-    width: 95%; /* 几乎占满全屏宽度 */
-    height: 90vh; /* 占满高度 */
-    max-width: 1400px; /* 大屏幕上不过于宽 */
-    background: #000;
-    border: 1px solid var(--border-color);
-    padding: 20px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+.app-container {
     display: flex;
-    flex-direction: column;
+    gap: 40px;
+    width: 90%;
+    max-width: 1100px;
+    height: 80vh;
+    align-items: center;
 }
 
-.sys-header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    flex-shrink: 0; /* 防止头部被压缩 */
-}
-
-/* --- 核心布局修改 --- */
-.dashboard-grid {
-    display: flex;
-    gap: 20px;
-    flex: 1; /* 填满剩余高度 */
+.card {
+    background: var(--card-white);
+    border-radius: 32px;
+    box-shadow: var(--shadow);
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
-/* 左侧视频区：占 70% */
-.monitor-panel {
-    flex: 3; /* 权重改为 3 */
-    display: flex;
-    flex-direction: column;
+.video-card {
+    flex: 3;
+    height: 100%;
+    position: relative;
+    padding: 10px;
+    border: 4px solid #fff;
 }
 
 .video-wrapper {
-    position: relative;
-    border: 1px solid #333;
-    background: #000;
-    flex: 1; /* 让视频容器填满左侧区域 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
     overflow: hidden;
+    background-color: #f0f0f0;
 }
 
 .video-wrapper img {
-    /* 关键修改：恢复全彩，自适应大小 */
     width: 100%;
     height: 100%;
-    object-fit: contain; /* 保持比例，完整显示 */
-    filter: none; /* <--- 删除了滤镜，恢复彩色 */
+    object-fit: cover;
 }
 
-/* 右侧数据区：占 30% */
-.data-panel {
-    flex: 1; /* 权重改为 1 */
+.camera-tag {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #555;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.status-card {
+    flex: 2;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    min-width: 250px; /* 防止太窄 */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: var(--state-good-bg);
+    transition: background-color 0.5s ease;
 }
 
-/* 其他样式保持微调 */
-.data-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    padding: 15px;
+.emoji-display {
+    font-size: 8rem;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
 }
-.card-label { font-size: 0.8rem; color: #888; margin-bottom: 8px; border-bottom: 1px solid #333; }
-.status-display { font-size: 1.5rem; font-weight: bold; text-align: center; color: #fff; }
-.metric-row { display: flex; align-items: center; gap: 10px; }
-.metric-value { font-size: 1.2rem; min-width: 50px; }
-.progress-bar-bg { flex: 1; height: 8px; background: #333; }
-.progress-bar-fill { height: 100%; background: var(--primary-color); transition: width 0.3s; }
-.log-list { list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #aaa; overflow-y: auto; max-height: 200px; }
-.log-list li { padding: 4px 0; border-bottom: 1px solid #222; }
 
-/* 装饰元素 */
-.rec-tag { position: absolute; top: 15px; right: 15px; color: red; font-weight: bold; animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+h2 { font-size: 2.5rem; margin: 0; color: var(--state-good-text); }
+#sub-text { font-size: 1.1rem; opacity: 0.8; margin-bottom: 40px; color: var(--state-good-text); }
+
+.angle-capsule {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 10px 25px;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.angle-capsule .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+.angle-capsule .value { font-size: 1.5rem; font-weight: bold; }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+    .app-container { flex-direction: column; height: auto; padding: 20px 0; }
+    .video-card, .status-card { width: 100%; height: 400px; }
+}
