@@ -1,146 +1,170 @@
 :root {
-    --neon-green: #00ff41;
-    --dark-bg: #0d0d0d;
-    --alert-red: #ff3333;
+    --primary-color: #00ff41; /* 经典黑客绿 */
+    --alert-color: #ff3333;   /* 警报红 */
+    --bg-color: #0a0a0a;      /* 深黑背景 */
+    --panel-bg: rgba(0, 20, 0, 0.3); /* 半透明面板 */
+    --border-color: #1a3320;
 }
 
 body {
-    background-color: var(--dark-bg);
-    color: var(--neon-green);
-    font-family: 'Courier New', Courier, monospace; /* 等宽字体是黑客风的灵魂 */
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    font-family: 'Consolas', 'Monaco', monospace;
     margin: 0;
-    padding: 20px;
     height: 100vh;
-    box-sizing: border-box;
     overflow: hidden;
-}
-
-/* CRT 扫描线特效层 */
-.overlay-scanline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(255,255,255,0),
-        rgba(255,255,255,0) 50%,
-        rgba(0,0,0,0.2) 50%,
-        rgba(0,0,0,0.2)
-    );
-    background-size: 100% 4px;
-    pointer-events: none; /* 让点击穿透 */
-    z-index: 999;
-}
-
-header {
-    border-bottom: 2px solid var(--neon-green);
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-h1 { margin: 0; font-size: 2rem; text-shadow: 0 0 5px var(--neon-green); }
-
-.status-bar span { margin-left: 20px; font-size: 0.9rem; }
-.status-ok { color: var(--neon-green); font-weight: bold; }
-
-/* 闪烁光标效果 */
-.blink { animation: blinker 1s linear infinite; }
-@keyframes blinker { 50% { opacity: 0; } }
-
-main {
-    display: flex;
-    height: calc(100vh - 100px);
-    gap: 20px;
-}
-
-/* 视频框设计 */
-/* === 修改 start: static/css/style.css === */
-
-/* 找到这一段并修改 */
-.video-frame {
-    flex: 0 1 auto;
-    width: 100%;
-    max-width: 640px;
-    
-    /* 新增这一行：限制最大高度为屏幕高度的 60%，防止在小屏幕上撑破 */
-    max-height: 60vh; 
-    
-    aspect-ratio: 4 / 3;
-    border: 1px solid #333;
-    position: relative;
-    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    margin: auto; 
-    align-self: center;
 }
 
-/* === 修改 end === */
+/* 扫描线背景 */
+.scanline {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.03) 3px);
+    pointer-events: none;
+    z-index: 0;
+}
 
-/* 找到这一段并修改 */
-.video-frame img {
+.main-interface {
+    width: 90%;
+    max-width: 1000px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    z-index: 1;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 顶部栏 */
+.sys-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.brand { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; }
+.version { font-size: 0.8rem; opacity: 0.7; }
+.sys-info { font-size: 0.8rem; color: #666; }
+.status-dot { display: inline-block; width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; margin-right: 5px; box-shadow: 0 0 5px var(--primary-color); }
+
+/* 左右布局核心 */
+.dashboard-grid {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start; /* 顶部对齐 */
+}
+
+/* 左侧：视频区 */
+.monitor-panel {
+    flex: 0 0 45%; /* 占用 45% 宽度 */
+}
+
+.video-wrapper {
+    position: relative;
+    border: 1px solid #333;
+    background: #000;
+    padding: 2px;
+}
+
+.video-wrapper img {
     width: 100%;
-    height: 100%;
-    /* object-fit: cover;  <-- 删掉这一行，或者注释掉 */
-    object-fit: contain;  /* <-- 改成这一行：保证显示全貌，不裁切 */
-    
-    filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(1.2); 
+    display: block;
+    filter: sepia(80%) hue-rotate(50deg) contrast(1.1); /* 稍微降低一点滤镜强度，看起来清晰点 */
 }
 
-/* 视频四角装饰 */
-.corner-bracket {
+.rec-tag {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    border: 3px solid var(--neon-green);
-    z-index: 10;
-}
-.top-left { top: 10px; left: 10px; border-right: none; border-bottom: none; }
-.top-right { top: 10px; right: 10px; border-left: none; border-bottom: none; }
-.bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; }
-.bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; }
-
-.video-overlay {
-    position: absolute;
-    top: 15px;
-    left: 40px;
-    background: rgba(0,0,0,0.7);
-    padding: 2px 5px;
+    top: 10px; right: 10px;
+    color: var(--alert-color);
     font-size: 0.8rem;
+    animation: blink 2s infinite;
 }
 
-/* 侧边栏 */
-.info-panel {
+.camera-info {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: #444;
+}
+
+/* 装饰角标 */
+.reticle-corner {
+    position: absolute;
+    width: 10px; height: 10px;
+    border: 2px solid var(--primary-color);
+}
+.top-left { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.top-right { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+.bottom-left { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+.bottom-right { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+/* 右侧：数据区 */
+.data-panel {
     flex: 1;
-    border-left: 1px dashed var(--neon-green);
-    padding-left: 20px;
     display: flex;
     flex-direction: column;
+    gap: 15px;
 }
 
+.data-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+}
+
+.card-label {
+    font-size: 0.7rem;
+    color: #555;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #222;
+    padding-bottom: 5px;
+}
+
+/* 状态显示 */
+.status-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+/* 进度条样式 */
+.metric-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.metric-value { font-size: 1.5rem; width: 60px; }
+.progress-bar-bg {
+    flex: 1;
+    height: 10px;
+    background: #111;
+    border: 1px solid #333;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary-color);
+    width: 50%;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.helper-text { font-size: 0.7rem; color: #444; margin-top: 5px; }
+
+/* 日志 */
 .log-list {
     list-style: none;
     padding: 0;
-    font-size: 0.9rem;
-    color: #88ffaa;
-    flex-grow: 1;
+    margin: 0;
+    font-size: 0.8rem;
+    height: 100px;
+    overflow-y: hidden; /* 隐藏滚动条 */
+    color: #888;
 }
+.log-list li { border-bottom: 1px solid #111; padding: 3px 0; }
 
-.log-list li { margin-bottom: 5px; }
-
-.status-indicator {
-    border: 2px solid var(--neon-green);
-    padding: 20px;
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
-    margin-top: auto; /* 推到底部 */
-    text-shadow: 0 0 10px var(--neon-green);
-}
+/* 动画 */
+@keyframes blink { 50% { opacity: 0; } }
