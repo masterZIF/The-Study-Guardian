@@ -1,12 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const statusIndicator = document.getElementById("posture-indicator");
+    // 获取 DOM 元素
+    const statusDisplay = document.getElementById("posture-indicator");
+    const angleValue = document.getElementById("angle-value");
+    const angleBar = document.getElementById("angle-bar");
     const logList = document.querySelector(".log-list");
-    const cpuSpan = document.querySelector(".random-change"); // 简单模拟
+    const cpuSpan = document.querySelector(".random-change");
     
-    // 状态映射：定义不同状态下的样式
-    const STATUS_MAP = {
-        "Normal": { color: "#00ff41", text: "NORMAL", alert: false },
-        "Warning: Slouching!": { color: "#ff3333", text: "CRITICAL: SLOUCHING", alert: true }
+    // 状态配置
+    const CONFIG = {
+        "Normal": { color: "#00ff41", text: "NORMAL // 正常", alert: false },
+        "Warning: Slouching!": { color: "#ff3333", text: "WARNING // 驼背", alert: true }
     };
 
     let lastStatus = "";
@@ -15,47 +18,46 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch('/status')
             .then(response => response.json())
             .then(data => {
-                const config = STATUS_MAP[data.status] || STATUS_MAP["Normal"];
+                // 1. 获取当前状态配置
+                const state = CONFIG[data.status] || CONFIG["Normal"];
                 
-                // 1. 更新大状态指示灯
-                statusIndicator.innerText = config.text;
-                statusIndicator.style.borderColor = config.color;
-                statusIndicator.style.color = config.color;
-                statusIndicator.style.textShadow = `0 0 10px ${config.color}`;
+                // 2. 更新状态卡片
+                statusDisplay.innerText = state.text;
+                statusDisplay.style.color = state.color;
+                statusDisplay.style.borderColor = state.alert ? state.color : "transparent";
+                statusDisplay.style.textShadow = `0 0 10px ${state.color}`;
 
-                // 2. 触发报警特效 (页面边框变红)
-                if (config.alert) {
-                    document.body.style.boxShadow = "inset 0 0 50px #ff0000";
-                } else {
-                    document.body.style.boxShadow = "none";
-                }
+                // 3. 更新角度进度条
+                angleValue.innerText = data.angle + "°";
+                
+                // 简单的归一化：假设 100度到 180度是有效区间
+                let percentage = Math.max(0, Math.min(100, (data.angle - 100) / 0.8));
+                angleBar.style.width = percentage + "%";
+                angleBar.style.backgroundColor = state.color; // 进度条颜色也随状态变
 
-                // 3. 记录日志 (只有状态改变时才记录)
-                if (data.status !== lastStatus && data.status.includes("Warning")) {
-                    addLog(`[ALERT] Posture deviation detected! Angle: ${data.angle}°`, "warning-text");
+                // 4. 记录日志
+                if (data.status !== lastStatus && state.alert) {
+                    addLog(`[ALERT] Angle dropped to ${data.angle}°`, "#ff3333");
                 }
                 lastStatus = data.status;
 
-                // 4. 模拟 CPU 波动 (增加一点极客感)
-                if(Math.random() > 0.7) {
-                    cpuSpan.innerText = Math.floor(Math.random() * 30 + 10) + "%";
+                // 5. 模拟 CPU 跳动
+                if(Math.random() > 0.5) {
+                    cpuSpan.innerText = Math.floor(Math.random() * 20 + 10) + "%";
                 }
             })
-            .catch(err => console.error("Data link severed:", err));
+            .catch(err => console.error("Link Error:", err));
     }
 
-    function addLog(message, className) {
+    function addLog(msg, color) {
         const li = document.createElement("li");
-        li.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
-        if (className) li.classList.add(className);
+        li.innerHTML = `<span style="color:${color || '#888'}">> ${msg}</span>`;
         
-        // 保持日志只有最新的 8 条
-        if (logList.children.length > 8) {
-            logList.removeChild(logList.firstChild);
+        logList.prepend(li); // 新日志插在最上面
+        if (logList.children.length > 6) {
+            logList.removeChild(logList.lastChild);
         }
-        logList.appendChild(li);
     }
 
-    // 每 500 毫秒轮询一次后端状态
     setInterval(updateSystem, 500);
 });
