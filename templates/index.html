@@ -8,7 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
     <div class="app-container">
+        <header class="app-header">
+            <span class="logo">🌱</span> 
+            <span class="app-name">Posture Pal</span>
+        </header>
+
         <div class="card video-card">
             <div class="video-wrapper">
                 <img src="{{ url_for('video_feed') }}" alt="Live Feed">
@@ -28,6 +36,7 @@
             </div>
         </div>
     </div>
+    
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

@@ -1,11 +1,13 @@
 :root {
-    --bg-color: #fdfbf7;
+    /* === 关键：背景色必须改为浅灰，光晕才能透出来 === */
+    --bg-color: #f3f4f6; 
+    
     --card-white: #ffffff;
     --state-good-bg: #d1fae5;
     --state-good-text: #065f46;
     --state-bad-bg: #ffe4e6;
     --state-bad-text: #9f1239;
-    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    --shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.08);
 }
 
 body {
@@ -17,15 +19,70 @@ body {
     justify-content: center;
     align-items: center;
     color: #333;
+    overflow: hidden; 
+    position: relative; /* 这一行很关键，为了让光晕定位 */
 }
+
+/* === 这里是光晕的代码，请确认文件里有这一段 === */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px); /* 模糊滤镜 */
+    z-index: 0; /* 放在最底层 */
+    opacity: 0.8; /* 调整透明度 */
+    animation: float 10s infinite ease-in-out;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: #bfdbfe; /* 浅蓝光晕 */
+    top: -150px;
+    left: -150px;
+}
+
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: #fbcfe8; /* 粉色光晕 */
+    bottom: -100px;
+    right: -100px;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 50px) scale(1.1); }
+}
+/* =========================================== */
 
 .app-container {
     display: flex;
-    gap: 40px;
+    flex-wrap: wrap; 
+    gap: 30px;
     width: 90%;
     max-width: 1100px;
-    height: 80vh;
+    height: 85vh; 
+    align-content: center; 
+    justify-content: center;
+    z-index: 1; /* 确保内容在光晕上面 */
+}
+
+.app-header {
+    width: 100%;
+    display: flex;
     align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.logo { font-size: 2rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
+.app-name { 
+    font-size: 1.6rem; 
+    font-weight: bold; 
+    color: #374151; 
+    letter-spacing: -0.5px;
 }
 
 .card {
@@ -34,14 +91,16 @@ body {
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: transform 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.5); 
 }
 
 .video-card {
     flex: 3;
-    height: 100%;
+    height: 70vh;
+    min-height: 400px;
     position: relative;
     padding: 10px;
-    border: 4px solid #fff;
+    background: #fff;
 }
 
 .video-wrapper {
@@ -50,6 +109,7 @@ body {
     border-radius: 24px;
     overflow: hidden;
     background-color: #f0f0f0;
+    position: relative;
 }
 
 .video-wrapper img {
@@ -62,53 +122,65 @@ body {
     position: absolute;
     top: 25px;
     left: 25px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     padding: 8px 16px;
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
-    color: #555;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    color: #4b5563;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    backdrop-filter: blur(5px);
 }
 
 .status-card {
     flex: 2;
-    height: 100%;
+    height: 70vh;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     background-color: var(--state-good-bg);
-    transition: background-color 0.5s ease;
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-content {
+    padding: 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .emoji-display {
     font-size: 8rem;
     margin-bottom: 20px;
-    animation: bounce 2s infinite;
+    animation: bounce 3s infinite ease-in-out;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
-h2 { font-size: 2.5rem; margin: 0; color: var(--state-good-text); }
-#sub-text { font-size: 1.1rem; opacity: 0.8; margin-bottom: 40px; color: var(--state-good-text); }
+h2 { font-size: 2.2rem; margin: 0 0 10px 0; color: var(--state-good-text); }
+#sub-text { font-size: 1.1rem; opacity: 0.9; margin-bottom: 50px; color: var(--state-good-text); }
 
 .angle-capsule {
-    background: rgba(255, 255, 255, 0.6);
-    padding: 10px 25px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px 30px;
     border-radius: 50px;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     gap: 5px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
-.angle-capsule .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
-.angle-capsule .value { font-size: 1.5rem; font-weight: bold; }
+.angle-capsule .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.6; font-weight: bold;}
+.angle-capsule .value { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px;}
 
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-15px); }
 }
 
-@media (max-width: 768px) {
-    .app-container { flex-direction: column; height: auto; padding: 20px 0; }
-    .video-card, .status-card { width: 100%; height: 400px; }
+@media (max-width: 900px) {
+    .app-container { flex-direction: column; height: auto; padding: 40px 0; }
+    .video-card, .status-card { width: 100%; height: 400px; flex: none; }
+    .app-header { justify-content: center; }
 }
