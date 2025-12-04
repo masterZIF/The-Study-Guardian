@@ -1,0 +1,129 @@
+:root {
+    --neon-green: #00ff41;
+    --dark-bg: #0d0d0d;
+    --alert-red: #ff3333;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--neon-green);
+    font-family: 'Courier New', Courier, monospace; /* 等宽字体是黑客风的灵魂 */
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* CRT 扫描线特效层 */
+.overlay-scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px;
+    pointer-events: none; /* 让点击穿透 */
+    z-index: 999;
+}
+
+header {
+    border-bottom: 2px solid var(--neon-green);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+h1 { margin: 0; font-size: 2rem; text-shadow: 0 0 5px var(--neon-green); }
+
+.status-bar span { margin-left: 20px; font-size: 0.9rem; }
+.status-ok { color: var(--neon-green); font-weight: bold; }
+
+/* 闪烁光标效果 */
+.blink { animation: blinker 1s linear infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+main {
+    display: flex;
+    height: calc(100vh - 100px);
+    gap: 20px;
+}
+
+/* 视频框设计 */
+.video-frame {
+    flex: 2;
+    border: 1px solid #333;
+    position: relative;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.video-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 保持比例填满 */
+    filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(1.2); /* 绿屏滤镜效果 */
+}
+
+/* 视频四角装饰 */
+.corner-bracket {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--neon-green);
+    z-index: 10;
+}
+.top-left { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+.top-right { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+.bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+.bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+.video-overlay {
+    position: absolute;
+    top: 15px;
+    left: 40px;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 5px;
+    font-size: 0.8rem;
+}
+
+/* 侧边栏 */
+.info-panel {
+    flex: 1;
+    border-left: 1px dashed var(--neon-green);
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.log-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.9rem;
+    color: #88ffaa;
+    flex-grow: 1;
+}
+
+.log-list li { margin-bottom: 5px; }
+
+.status-indicator {
+    border: 2px solid var(--neon-green);
+    padding: 20px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: auto; /* 推到底部 */
+    text-shadow: 0 0 10px var(--neon-green);
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_MONITOR // POSTURE_SENTRY</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="overlay-scanline"></div> <div class="container">
+        <header>
+            <h1>POSTURE_SENTRY <span class="blink">_v1.0</span></h1>
+            <div class="status-bar">
+                <span>SYSTEM: <span class="status-ok">ONLINE</span></span>
+                <span>CPU: <span class="random-change">12%</span></span>
+                <span>MEM: <span class="random-change">450MB</span></span>
+            </div>
+        </header>
+
+        <main>
+            <div class="video-frame">
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                
+                <img src="{{ url_for('video_feed') }}" alt="Live Feed">
+                
+                <div class="video-overlay">REQ: /dev/video0 [CAPTURING]</div>
+            </div>
+
+            <aside class="info-panel">
+                <h2>> DIAGNOSTICS</h2>
+                <ul class="log-list">
+                    <li>[10:00:01] Initializing neural net... OK</li>
+                    <li>[10:00:02] Loading MediaPipe Pose... OK</li>
+                    <li>[10:00:03] Camera stream connected.</li>
+                    <li>[SYSTEM] Monitoring active.</li>
+                    <li class="warning-text" style="display:none;">[ALERT] POSTURE DEVIATION DETECTED</li>
+                </ul>
+                
+                <div class="control-box">
+                    <h3>STATUS</h3>
+                    <div class="status-indicator" id="posture-indicator">NORMAL</div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
